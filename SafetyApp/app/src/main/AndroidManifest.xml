@@ -23,6 +23,8 @@
             android:name=".LocationUpdateService"
             android:exported="false" />
 
+        <service android:name=".ActivityRecognizedService" />
+
         <activity android:name=".AcceptedSOSRequest"></activity>
     </application>
 

@@ -14,10 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-/**
- * @author dilraj
- */
-@TargetApi(19)
 public class PostRequestHandler extends AsyncTask<String, Void, Void> {
 
     private final String TAG = "PostRequestHandler";

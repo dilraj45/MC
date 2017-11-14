@@ -1,11 +1,14 @@
 package aroundme.mcproject.com.safetyapp;
 
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,15 +17,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity implements Constants {
+public class LoginActivity extends AppCompatActivity implements Constants,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private final String TAG = "LoginActivity";
     private Button login_button;
     private TextView userNameTextView, passwordTextView;
     ProgressDialog progressDialog;
+
+    public GoogleApiClient mApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +43,14 @@ public class LoginActivity extends AppCompatActivity implements Constants {
         passwordTextView = (TextView) findViewById(R.id.input_password_login);
         Intent serviceIntent = new Intent(this, LocationUpdateService.class);
         this.startService(serviceIntent);
+
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
     }
 
     private boolean validateCredentials() {
@@ -130,4 +147,24 @@ public class LoginActivity extends AppCompatActivity implements Constants {
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
     }
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Intent intent = new Intent( this, ActivityRecognizedService.class );
+        PendingIntent pendingIntent = PendingIntent.getService( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates( mApiClient, 3000, pendingIntent );
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
 }

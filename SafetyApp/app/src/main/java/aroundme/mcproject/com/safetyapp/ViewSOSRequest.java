@@ -30,9 +30,6 @@ import static aroundme.mcproject.com.safetyapp.Constants.PREF_CONSTANT;
 import static aroundme.mcproject.com.safetyapp.Constants.UPDATE_LOCATION_URI;
 import static aroundme.mcproject.com.safetyapp.Constants.URI_BUILD_SCHEME;
 
-/**
- * @author dilraj
- */
 public class ViewSOSRequest extends AppCompatActivity {
 
     private ListView mainListView;
