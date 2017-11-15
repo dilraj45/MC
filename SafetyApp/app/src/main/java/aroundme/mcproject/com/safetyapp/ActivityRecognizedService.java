@@ -17,6 +17,8 @@ import java.util.List;
 
 public class ActivityRecognizedService extends IntentService {
 
+    private String activityRecognised = "Activity Recognised";
+
     public ActivityRecognizedService() {
         super("ActivityRecognizedService");
     }
@@ -40,34 +42,75 @@ public class ActivityRecognizedService extends IntentService {
             switch( activity.getType() ) {
                 case DetectedActivity.IN_VEHICLE: {
                     Log.e( "ActivityRecogition", "In Vehicle: " + activity.getConfidence() );
+                    if( activity.getConfidence() >= 75 ) {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                        builder.setContentText( "You are currently in a Vehicle." );
+                        builder.setSmallIcon( R.drawable.ic_safeapp);
+                        builder.setContentTitle( activityRecognised  );
+                        NotificationManagerCompat.from(this).notify(0, builder.build());
+                    }
+
                     break;
                 }
                 case DetectedActivity.ON_BICYCLE: {
                     Log.e( "ActivityRecogition", "On Bicycle: " + activity.getConfidence() );
+                    if( activity.getConfidence() >= 75 ) {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                        builder.setContentText( "You are currently on Bicycle." );
+                        builder.setSmallIcon( R.drawable.ic_safeapp);
+                        builder.setContentTitle( activityRecognised);
+                        NotificationManagerCompat.from(this).notify(0, builder.build());
+                    }
+
                     break;
                 }
                 case DetectedActivity.ON_FOOT: {
                     Log.e( "ActivityRecogition", "On Foot: " + activity.getConfidence() );
+                    if( activity.getConfidence() >= 75 ) {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                        builder.setContentText( "You are currently on Foot." );
+                        builder.setSmallIcon( R.drawable.ic_safeapp);
+                        builder.setContentTitle(activityRecognised  );
+                        NotificationManagerCompat.from(this).notify(0, builder.build());
+                    }
+
                     break;
                 }
                 case DetectedActivity.RUNNING: {
                     Log.e( "ActivityRecogition", "Running: " + activity.getConfidence() );
+                    if( activity.getConfidence() >= 75 ) {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                        builder.setContentText( "You are currently Running." );
+                        builder.setSmallIcon(R.drawable.ic_safeapp);
+                        builder.setContentTitle( activityRecognised);
+                        NotificationManagerCompat.from(this).notify(0, builder.build());
+                    }
+
                     break;
                 }
                 case DetectedActivity.STILL: {
                     Log.e( "ActivityRecogition", "Still: " + activity.getConfidence() );
+                    if( activity.getConfidence() >= 75 ) {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                        builder.setContentText( "You are currently Still." );
+                        builder.setSmallIcon( R.drawable.ic_safeapp);
+                        builder.setContentTitle( activityRecognised );
+                        NotificationManagerCompat.from(this).notify(0, builder.build());
+                    }
+
                     break;
                 }
                 case DetectedActivity.TILTING: {
                     Log.e( "ActivityRecogition", "Tilting: " + activity.getConfidence() );
+
                     break;
                 }
                 case DetectedActivity.WALKING: {
                     Log.e( "ActivityRecogition", "Walking: " + activity.getConfidence() );
                     if( activity.getConfidence() >= 75 ) {
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                        builder.setContentText( "Are you walking?" );
-                        builder.setSmallIcon( R.mipmap.ic_launcher );
+                        builder.setContentText( "You are currently Walking." );
+                        builder.setSmallIcon( R.drawable.ic_safeapp);
                         builder.setContentTitle( getString( R.string.app_name ) );
                         NotificationManagerCompat.from(this).notify(0, builder.build());
                     }
@@ -75,6 +118,7 @@ public class ActivityRecognizedService extends IntentService {
                 }
                 case DetectedActivity.UNKNOWN: {
                     Log.e( "ActivityRecogition", "Unknown: " + activity.getConfidence() );
+
                     break;
                 }
             }
