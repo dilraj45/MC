@@ -64,29 +64,32 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
         postSOSRequest(message);
 
     }
-        public void postSOSRequest(String message) {
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
-        builder.appendPath(POST_SOS_REQUEST_URI);
-        String urlString = builder.build().toString();
 
-        String token = getAuthenticationToken();
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put(AUTH_TOKEN, token);
-            requestBody.put(MESSAGE, message);
-        } catch (JSONException exception) {
-            exception.printStackTrace();
-            return;
-        }
+    public void postSOSRequest(String message) {
+    Uri.Builder builder = new Uri.Builder();
+    builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
+    builder.appendPath(POST_SOS_REQUEST_URI);
+    String urlString = builder.build().toString();
 
-        PostRequestHandler handler = new PostRequestHandler(getApplicationContext());
-        Log.v(TAG, String.format("URL: %s", urlString));
-        Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
-        handler.execute(urlString, requestBody.toString());
+    String token = getAuthenticationToken();
+    JSONObject requestBody = new JSONObject();
+    try {
+        requestBody.put(AUTH_TOKEN, token);
+        requestBody.put(MESSAGE, message);
+    } catch (JSONException exception) {
+        exception.printStackTrace();
+        return;
+    }
 
-        Intent i = new Intent(this,DeleteRequest.class);
+    PostRequestHandler handler = new PostRequestHandler(getApplicationContext()) {
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        Intent i = new Intent(this.appContext, DeleteRequest.class);
         startActivity(i);
+    }};
+    Log.v(TAG, String.format("URL: %s", urlString));
+    Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
+    handler.execute(urlString, requestBody.toString());
     }
 
     private String getAuthenticationToken() {

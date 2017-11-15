@@ -31,8 +31,9 @@ import static aroundme.mcproject.com.safetyapp.Constants.OPEN_SOS_REQUEST;
 import static aroundme.mcproject.com.safetyapp.Constants.OPEN_SOS_REQUEST_URI;
 import static aroundme.mcproject.com.safetyapp.Constants.PREF_CONSTANT;
 import static aroundme.mcproject.com.safetyapp.Constants.URI_BUILD_SCHEME;
+import static aroundme.mcproject.com.safetyapp.Constants.VOLUNTEER_LIST_URI;
 
-public class DeleteRequest extends AppCompatActivity {
+public class DeleteRequest extends AppCompatActivity implements Constants {
 
     private ListView mainListView;
     private ArrayAdapter<String> listAdapter;
@@ -50,7 +51,7 @@ public class DeleteRequest extends AppCompatActivity {
 
         mainListView = (ListView) findViewById( R.id.mainListView2 );
         sosMessages = new ArrayList<SOSMessage>();
-        sosMessages.add(new SOSMessage("Shubhkarman", "Help me!!", "1.00000", "0.00000"));
+        sosMessages.add(new SOSMessage("", "", "", ""));
 
         this.mAdapter = new MyListAdapter(this, sosMessages);
         mainListView.setAdapter(mAdapter);
@@ -111,7 +112,7 @@ public class DeleteRequest extends AppCompatActivity {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
         SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
-        builder.appendEncodedPath(CLOSE_SOS_REQUEST_URI).appendQueryParameter(
+        builder.appendEncodedPath(VOLUNTEER_LIST_URI).appendQueryParameter(
                 AUTH_TOKEN, pref.getString(AUTH_TOKEN, null));
         String urlString = builder.build().toString();
         Log.v(TAG, "Get Request URI: " + urlString);
@@ -136,18 +137,18 @@ public class DeleteRequest extends AppCompatActivity {
         mAdapter.clear();
         mAdapter.notifyDataSetChanged();
         //string to json and parse
+        if (response == null)
+            return;
         JSONObject responseObj = new JSONObject(response);
-        JSONArray openRequests = responseObj.getJSONArray(OPEN_SOS_REQUEST);
-        Log.v(TAG, "Json array of open sos requests " + openRequests.toString());
+        JSONArray openRequests = responseObj.getJSONArray(VOLUNTEER);
+        Log.v(TAG, "Json array of Volunteers " + openRequests.toString());
         Log.v(TAG, openRequests.toString());
         for (int i = 0; i < openRequests.length(); i++) {
             JSONObject object = openRequests.getJSONObject(i);
             String username = object.getString("username");
-
-
             sosMessages.add(new SOSMessage(username,"Coming","lat","lon"));
         }
-        Log.v("Dilraj", sosMessages.toString());
+        Log.v("sample", sosMessages.toString());
         mAdapter.addItem(sosMessages);
     }
 
@@ -156,4 +157,18 @@ public class DeleteRequest extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void closeRequestActivity(View view) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+        builder.appendEncodedPath(CLOSE_SOS_REQUEST_URI).appendQueryParameter(
+                AUTH_TOKEN, pref.getString(AUTH_TOKEN, null));
+        String urlString = builder.build().toString();
+        Log.v(TAG, "Get Request URI: " + urlString);
+        // fetching data from server
+        GetRequestHandler requestHandler = new GetRequestHandler(this);
+        requestHandler.execute(urlString);
+        finish();
+    }
+    
 }

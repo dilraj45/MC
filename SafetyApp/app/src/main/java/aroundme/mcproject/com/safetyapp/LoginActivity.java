@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements Constants,Google
         return valid;
     }
 
-    private void authenticate_credentials(String username, String password) {
+    private void authenticate_credentials(final String username, String password) {
         Log.v(TAG, "Authenticating credential for username " + username);
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
@@ -97,9 +97,10 @@ public class LoginActivity extends AppCompatActivity implements Constants,Google
                         JSONObject responseJSON = new JSONObject(this.response);
                         String authToken = responseJSON.getString(AUTH_TOKEN);
 
-                        Log.v(TAG, "Saving authentication token to Shared preferences!!");
+                        Log.v(TAG, "Saving authentication token to Shared preferences!!" + username);
                         SharedPreferences pref = this.appContext.getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
                         pref.edit().putString(AUTH_TOKEN, authToken).apply();
+                        pref.edit().putString(USERNAME, username).apply();
                         progressDialog.dismiss();
 
                         Intent intent = new Intent(this.appContext, ViewSOSRequest.class);

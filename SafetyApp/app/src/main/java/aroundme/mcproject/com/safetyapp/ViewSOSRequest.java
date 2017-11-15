@@ -56,6 +56,7 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3) {
                 //Log.i("m", "-"+pos);
+                SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
                 postCallForAccept(sosMessages.get(pos).username);
                 String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", Double.valueOf(sosMessages.get(pos).latitude),Double.valueOf(sosMessages.get(pos).longitude), Double.valueOf(sosMessages.get(pos).latitude),Double.valueOf(sosMessages.get(pos).longitude));
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
@@ -92,11 +93,15 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
             return;
         }
 
-        PostRequestHandler handler = new PostRequestHandler(getApplicationContext());
+        PostRequestHandler handler = new PostRequestHandler(getApplicationContext()) {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                return;
+            }
+        };
         Log.v(TAG, String.format("URL: %s", urlString));
         Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
         handler.execute(urlString, requestBody.toString());
-
     }
 
     private String getAuthenticationToken() {
@@ -157,6 +162,8 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
         mAdapter.clear();
         mAdapter.notifyDataSetChanged();
         //string to json and parse
+        if (response == null)
+            return;
         JSONObject responseObj = new JSONObject(response);
         JSONArray openRequests = responseObj.getJSONArray(OPEN_SOS_REQUEST);
         Log.v(TAG, "Json array of open sos requests " + openRequests.toString());
