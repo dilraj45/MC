@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -54,8 +56,8 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3) {
                 //Log.i("m", "-"+pos);
-                String uri = String.format(Locale.ENGLISH, "geo:%s,%s", sosMessages.get(pos).latitude,
-                        sosMessages.get(pos).longitude);
+                postCallForAccept(sosMessages.get(pos).username);
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", Double.valueOf(sosMessages.get(pos).latitude),Double.valueOf(sosMessages.get(pos).longitude), Double.valueOf(sosMessages.get(pos).latitude),Double.valueOf(sosMessages.get(pos).longitude));
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
             }
@@ -72,6 +74,34 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
             }
         }).start();
         // Find the ListView resource.
+    }
+
+    private void postCallForAccept(String username) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
+        builder.appendPath(ACCEPT_SOS_REQUEST_URI);
+        String urlString = builder.build().toString();
+
+        String token = getAuthenticationToken();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put(AUTH_TOKEN, token);
+            requestBody.put(USERNAME, username);
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+            return;
+        }
+
+        PostRequestHandler handler = new PostRequestHandler(getApplicationContext());
+        Log.v(TAG, String.format("URL: %s", urlString));
+        Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
+        handler.execute(urlString, requestBody.toString());
+
+    }
+
+    private String getAuthenticationToken() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+        return pref.getString(AUTH_TOKEN, null);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,41 +148,6 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
             }
         };
         requestHandler.execute(urlString);
-//        JSONObject requestBody = new JSONObject();
-//        while (true) {
-//            try {
-//                requestBody.put(DISTANCE, DISTANCE_VALUE);
-//            } catch (JSONException exception) {
-//                Log.v(TAG, exception.getStackTrace().toString());
-//                exception.printStackTrace();
-//            }
-//
-//            Log.v(TAG, "URL: " + urlString);
-//            Log.v(TAG, "Request body: " + requestBody.toString());
-//            PostRequestHandler handler = new PostRequestHandler(getApplicationContext()) {
-//                @Override
-//                protected void onPostExecute(Void aVoid) {
-//                    super.onPostExecute(aVoid);
-//                    if (this.response == null || this.response.isEmpty()) {
-//                        Toast.makeText(this.appContext, "Something went wrong!!", Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//                    Toast.makeText(appContext, this.response, Toast.LENGTH_SHORT).show();
-//                    try {
-//                        whatToDo(this.response);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            };
-//            handler.execute(urlString, requestBody.toString());
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                Log.v(TAG, e.getStackTrace().toString());
-//            }
-//        }
     }
 
     public void whatToDo(String response) throws JSONException {
@@ -183,4 +178,36 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
         Intent intent = new Intent(this, PostSOSRequest.class);
         startActivity(intent);
     }
+
+
+    private int eventCount =0;
+    private long firstEventTime =0, eventDiff = 1000;
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        super.onKeyDown(keyCode, event);
+
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ) {
+            if (eventCount == 1 && (event.getEventTime()-firstEventTime) < eventDiff)  {
+
+                Toast.makeText(this, "Help Me!!!",
+                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, PostSOSRequest.class);
+                //sent using gesture
+                intent.putExtra("Gesture",true);
+                startActivity(intent);
+                Log.d("key down","key down");
+                eventCount = 0;
+                return true;
+            }
+            else{
+                eventCount =1;
+                firstEventTime=event.getEventTime();
+            }
+        }
+        return false;
+    }
+
+
 }

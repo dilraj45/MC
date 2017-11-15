@@ -27,6 +27,11 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_sosrequest);
+        Intent i = getIntent();
+        //sent using gesture
+        if(i.getBooleanExtra("Gesture",false)){
+            postSOSRequest("Help Me !!!");
+        }
 
         // todo: move this to landing activity after login
         Log.v(TAG, "Triggering background service");
@@ -55,12 +60,16 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
     }
 
     public void postSOSRequest(View view) {
+        String message = ((EditText) findViewById(R.id.message)).getText().toString();
+        postSOSRequest(message);
+
+    }
+        public void postSOSRequest(String message) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
         builder.appendPath(POST_SOS_REQUEST_URI);
         String urlString = builder.build().toString();
 
-        String message = ((EditText) findViewById(R.id.message)).getText().toString();
         String token = getAuthenticationToken();
         JSONObject requestBody = new JSONObject();
         try {
@@ -75,6 +84,9 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
         Log.v(TAG, String.format("URL: %s", urlString));
         Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
         handler.execute(urlString, requestBody.toString());
+
+        Intent i = new Intent(this,DeleteRequest.class);
+        startActivity(i);
     }
 
     private String getAuthenticationToken() {

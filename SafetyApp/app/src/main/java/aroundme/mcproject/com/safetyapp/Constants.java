@@ -26,6 +26,7 @@ public interface Constants {
     String POST_SOS_REQUEST_URI = "androidServer/PostSOSRequest";
     String LOG_IN_URI = "androidServer/AuthenticateCred";
     String OPEN_SOS_REQUEST_URI = "androidServer/OpenSOSRequest";
-
+    String CLOSE_SOS_REQUEST_URI = "androidServer/CloseSOSRequest";
+    String ACCEPT_SOS_REQUEST_URI = "androidServer/AcceptSOSRequest";
     String PREF_CONSTANT = "com.mcproject.aroundme";
 }

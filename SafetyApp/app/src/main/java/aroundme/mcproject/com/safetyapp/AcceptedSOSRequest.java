@@ -14,15 +14,15 @@ import java.util.Locale;
 
 public class AcceptedSOSRequest extends AppCompatActivity {
 
-    public String latitude,longitude;
+    public Double latitude,longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accepted_sosrequests);
         Intent intent = getIntent();
-        this.latitude = intent.getStringExtra("latitude");
-        this.longitude = intent.getStringExtra("longitude");
+        this.latitude = Double.valueOf(intent.getStringExtra("latitude"));
+        this.longitude = Double.valueOf(intent.getStringExtra("longitude"));
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,7 +48,7 @@ public class AcceptedSOSRequest extends AppCompatActivity {
 
     public void goToLocation(View view) {
         Log.v("Dilraj", "Calling intent for maps");
-        String uri = String.format(Locale.ENGLISH, "geo:%s,%s", latitude, longitude);
+        String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f",latitude,longitude,latitude,longitude);
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         this.startActivity(intent);
     }
