@@ -7,9 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,11 +33,31 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
         Intent serviceIntent = new Intent(this, LocationUpdateService.class);
         this.startService(serviceIntent);
     }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.ourmenu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.action_repo)
+        {
+            String x = (String) item.getTitle();
+            item.setTitle("Reputation: " + String.valueOf(Integer.valueOf(x.charAt(x.length()-1))-48));
+            return true;
+        }
+        else if(item.getItemId()==R.id.action_settings)
+        {
+            Intent i = new Intent(this,Setting.class);
+            startActivity(i);
+        }
+        return false;
+    }
 
     public void postSOSRequest(View view) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
-        builder.appendPath(POST_SOS_REQUEST);
+        builder.appendPath(POST_SOS_REQUEST_URI);
         String urlString = builder.build().toString();
 
         String message = ((EditText) findViewById(R.id.message)).getText().toString();
