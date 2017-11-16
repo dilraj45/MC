@@ -41,14 +41,24 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.ourmenu, menu);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+        int x = pref.getInt("Reputation",0);
+        pref.edit().putInt("Reputation",x);
+        MenuItem item = menu.findItem(R.id.action_repo);
+        item.setTitle("Reputation: " +String.valueOf(x));
+
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.action_repo)
         {
-            String x = (String) item.getTitle();
-            item.setTitle("Reputation: " + String.valueOf(Integer.valueOf(x.charAt(x.length()-1))-48));
+            SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+            int x = pref.getInt("Reputation",0)+1;
+            pref.edit().putInt("Reputation",x);
+            //String x = (String) item.getTitle();
+            //item.setTitle("Reputation: " + String.valueOf(Integer.valueOf(x.charAt(x.length()-1))-47));
+            item.setTitle("Reputation: " +String.valueOf(x));
             return true;
         }
         else if(item.getItemId()==R.id.action_settings)
@@ -66,30 +76,30 @@ public class PostSOSRequest extends AppCompatActivity implements Constants {
     }
 
     public void postSOSRequest(String message) {
-    Uri.Builder builder = new Uri.Builder();
-    builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
-    builder.appendPath(POST_SOS_REQUEST_URI);
-    String urlString = builder.build().toString();
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
+        builder.appendPath(POST_SOS_REQUEST_URI);
+        String urlString = builder.build().toString();
 
-    String token = getAuthenticationToken();
-    JSONObject requestBody = new JSONObject();
-    try {
-        requestBody.put(AUTH_TOKEN, token);
-        requestBody.put(MESSAGE, message);
-    } catch (JSONException exception) {
-        exception.printStackTrace();
-        return;
-    }
+        String token = getAuthenticationToken();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put(AUTH_TOKEN, token);
+            requestBody.put(MESSAGE, message);
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+            return;
+        }
 
-    PostRequestHandler handler = new PostRequestHandler(getApplicationContext()) {
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        Intent i = new Intent(this.appContext, DeleteRequest.class);
-        startActivity(i);
-    }};
-    Log.v(TAG, String.format("URL: %s", urlString));
-    Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
-    handler.execute(urlString, requestBody.toString());
+        PostRequestHandler handler = new PostRequestHandler(getApplicationContext()) {
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Intent i = new Intent(this.appContext, DeleteRequest.class);
+            startActivity(i);
+        }};
+        Log.v(TAG, String.format("URL: %s", urlString));
+        Log.v(TAG, String.format("Request Body: %s", requestBody.toString()));
+        handler.execute(urlString, requestBody.toString());
     }
 
     private String getAuthenticationToken() {

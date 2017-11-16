@@ -112,15 +112,29 @@ public class ViewSOSRequest extends AppCompatActivity implements Constants {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.ourmenu, menu);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+        int x = pref.getInt("Reputation",0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("Reputation",x);
+        editor.commit();
+        MenuItem item = menu.findItem(R.id.action_repo);
+        item.setTitle("Reputation: " +String.valueOf(x));
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.action_repo)
         {
-            String x = (String) item.getTitle();
-            item.setTitle("Reputation: " + String.valueOf(Integer.valueOf(x.charAt(x.length()-1))-48));
+            SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_CONSTANT, Context.MODE_PRIVATE);
+            int x = pref.getInt("Reputation",0)+1;
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt("Reputation",x);
+            editor.commit();
+            //String x = (String) item.getTitle();
+            //item.setTitle("Reputation: " + String.valueOf(Integer.valueOf(x.charAt(x.length()-1))-47));
+            item.setTitle("Reputation: " +String.valueOf(x));
             return true;
+
         }
         else if(item.getItemId()==R.id.action_settings)
         {

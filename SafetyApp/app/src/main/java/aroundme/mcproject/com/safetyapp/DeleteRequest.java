@@ -152,11 +152,6 @@ public class DeleteRequest extends AppCompatActivity implements Constants {
         mAdapter.addItem(sosMessages);
     }
 
-    public void postRequestActivity(View view) {
-        Intent intent = new Intent(this, PostSOSRequest.class);
-        startActivity(intent);
-    }
-
     public void closeRequestActivity(View view) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(URI_BUILD_SCHEME).encodedAuthority(HOST);
